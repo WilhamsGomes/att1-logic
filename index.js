@@ -1,60 +1,70 @@
-// Criação de um objeto para armazenar os dados do usuário
-let usuario = {
-    nome: "",
-    idade: "",
-    nivel: ""
+const { activitiesDefault, activitiesAgriculture } = require("./activities");
+const readline = require("readline");
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+const usuario = {
+  name: "",
+  age: "",
+  profession: "",
 };
 
-// Função para coletar dados do usuário
-function coletarDados() {
-    usuario.nome = prompt("Por favor, insira seu nome:");
-    usuario.idade = prompt("Por favor, insira sua idade:");
-    usuario.nivel = prompt("Por favor, insira seu nível de alfabetização (iniciante, intermediário, avançado):");
-    console.log(usuario);
-}
+function askQuestion(activities, index) {
+  if (index >= activities.length) {
+    return;
+  }
 
-// Função para fornecer atividades de alfabetização com base nos dados do usuário
-function fornecerAtividades() {
-    if (usuario.nivel == "iniciante") {
-        console.log("Atividade para iniciantes: Vamos aprender o alfabeto!");
-    } else if (usuario.nivel == "intermediário") {
-        console.log("Atividade para intermediários: Vamos praticar a leitura de um parágrafo!");
-    } else if (usuario.nivel == "avançado") {
-        console.log("Atividade para avançados: Vamos escrever um ensaio!");
+  const activity = activities[index];
+  console.log("Responda a questão abaixo: ");
+  console.log("***************************");
+  console.log(activity.title);
+  console.log("***************************");
+  activity.alternatives.forEach((item, index) => {
+    console.log(`${index} - ${item}`);
+  });
+
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  rl.question("Insira sua alternativa: ", (response) => {
+    if (response == activity.responseKey) {
+      console.log("Você ACERTOU! NOTA 10");
     } else {
-        console.log("Por favor, insira um nível de alfabetização válido.");
+      console.log("Ops, você errou! Não se preocupe, estamos aqui para ajudar");
     }
+    rl.close();
+    askQuestion(activities, index + 1); // Chamar a próxima questão
+  });
 }
 
-// Executar as funções
-coletarDados();
-fornecerAtividades();
-
-
-// Adicionando mais propriedades ao objeto do usuário
-usuario.profissao = "";
-usuario.localizacao = "";
-
-// Função para coletar mais dados do usuário
-function coletarMaisDados() {
-    usuario.profissao = prompt("Por favor, insira sua profissão:");
-    usuario.localizacao = prompt("Por favor, insira sua localização:");
-    console.log(usuario);
+function generateActivity() {
+  if (usuario.profession == 1) {
+    askQuestion(activitiesDefault, 0);
+  } else {
+    askQuestion(activitiesAgriculture, 0);
+  }
 }
 
-// Função para fornecer atividades de alfabetização com base nos dados do usuário
-function fornecerAtividadesContextuais() {
-    if (usuario.profissao == "médico") {
-        console.log("Atividade para médicos: Vamos aprender terminologia médica!");
-    } else if (usuario.profissao == "engenheiro") {
-        console.log("Atividade para engenheiros: Vamos aprender sobre terminologia de engenharia!");
-    } else if (usuario.localizacao == "Brasil") {
-        console.log("Atividade para residentes no Brasil: Vamos aprender sobre a história e a cultura brasileira!");
-    } else {
-        console.log("Por favor, insira uma profissão e localização válidas.");
-    }
+function getDateUser() {
+  rl.question("Por favor, insira seu nome: ", (name) => {
+    usuario.name = name;
+    rl.question("Por favor, insira sua idade: ", (age) => {
+      usuario.age = age;
+      rl.question(
+        "Por favor, insira sua profissão | 1 - Agricultor, 0 - Outros: ",
+        (profession) => {
+          usuario.profession = profession;
+          rl.close();
+          generateActivity();
+        }
+      );
+    });
+  });
 }
 
-// Executar as funções
-coletarMaisDados();
-fornecerAtividadesContextuais();
+getDateUser();
